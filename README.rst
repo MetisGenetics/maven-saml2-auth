@@ -18,6 +18,8 @@ This project is a custom configuration of Fang Li's django-saml2-auth.  It aims 
 leverage some of the best practices and code existing in django-saml2-auth, while allowing
 it to work properly for a specific application and client (not an admin user and must implement client via Azure Active Directory)
 
+If you wish to see the original supported package navigate to the master branch or visit https://github.com/fangli/django-saml2-auth
+
 
 Dependencies
 ============
@@ -33,7 +35,6 @@ This plugin is installed in the requirements.txt file as:
     # https://github.com/dgonzo27/django-saml2-auth/archive/tch.zip
 
 xmlsec is also required by pysaml2 and is implemented in the Dockerfile:
-
 .. code-block:: bash
     # RUN apt-get install -y xmlsec1
 
