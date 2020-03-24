@@ -23,7 +23,6 @@ from django.utils.http import is_safe_url
 from logging import getLogger
 from book.models import Organization
 from integration.serializers import ReferralCreatorSerializer
-from refer.utils import PasswordlessAuthBackend
 from django.shortcuts import redirect
 from django.urls import reverse
 
