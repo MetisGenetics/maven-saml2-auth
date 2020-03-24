@@ -31,6 +31,7 @@ logger = getLogger('django-saml2-auth')
 # Default User
 User = get_user_model()
 
+# Get imports based on installed versions
 try:
     import urllib2 as _urllib
 except:
@@ -38,17 +39,20 @@ except:
     import urllib.error
     import urllib.parse
 
+# Get import based on installed version
 if parse_version(get_version()) >= parse_version('1.7'):
     from django.utils.module_loading import import_string
 else:
     from django.utils.module_loading import import_by_path as import_string
 
+# Helper function to obtain the default next url in the saml schema
 def _default_next_url():
     if 'DEFAULT_NEXT_URL' in settings.SAML2_AUTH:
         return settings.SAML2_AUTH['DEFAULT_NEXT_URL']
     else:
         return '/rfr/dashboard'
 
+# Helper function to obtain the current domain (assertion url) in the saml schema
 def get_current_domain(r):
     if 'ASSERTION_URL' in settings.SAML2_AUTH:
         return settings.SAML2_AUTH['ASSERTION_URL']
@@ -57,6 +61,7 @@ def get_current_domain(r):
         host=r.get_host(),
     )
 
+# Helper function to call reverse() on a list of objects
 def get_reverse(objects):
     if parse_version(get_version()) >= parse_version('2.0'):
         from django.urls import reverse
@@ -72,6 +77,7 @@ def get_reverse(objects):
             pass
     raise Exception('URL reverse issue: %s.  Known issue from fangli/django-saml2-auth' % str(objects))
 
+# Helper function to obtain the metadata in the saml schema
 def _get_metadata():
     if 'METADATA_LOCAL_FILE_PATH' in settings.SAML2_AUTH:
         return {
@@ -86,6 +92,7 @@ def _get_metadata():
             ]
         }
 
+# Helper function to obtain the saml client given the domain
 def _get_saml_client(domain):
     acs_url = domain + get_reverse([acs, 'acs', 'django_saml2_auth:acs'])
     metadata = _get_metadata()
@@ -121,6 +128,7 @@ def _get_saml_client(domain):
     saml_client = Saml2Client(config=spConfig)
     return saml_client
 
+# Helper function to render the custom welcome template if it exists
 @login_required
 def welcome(r):
     try:
@@ -128,6 +136,7 @@ def welcome(r):
     except TemplateDoesNotExist:
         return HttpResponseRedirect(_default_next_url())
 
+# Helper function to render the denied template
 def denied(r):
     return render(r, 'django_saml2_auth/denied.html')
 
@@ -169,6 +178,7 @@ def _create_new_user(username, email, firstname, lastname):
     
     return user
 
+# View function to handle logic after SSO user login
 @csrf_exempt
 def acs(r):
     logger.debug('acs')
@@ -188,13 +198,8 @@ def acs(r):
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
 
     # For Azure Active Directory Mapping
-    # try:
-    #     user_email = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')][0]
-    #     user_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')][0]
-    # except:
     user_email = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name')][0]
     user_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name')][0]
-    
     user_first_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('first_name', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname')][0]
     user_last_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('last_name', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname')][0]
 
@@ -208,6 +213,7 @@ def acs(r):
     except User.DoesNotExist:
         # Create a new user
         target_user = _create_new_user(user_name, user_email, user_first_name, user_last_name)
+        new_user = True
 			  
     # If the user is active, we want to login
     if target_user.is_active:
@@ -215,20 +221,16 @@ def acs(r):
         # Authenticate the user
         target_user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(r, target_user)
+        if is_new_user:
+            try:
+                return render(r, 'django_saml2_auth/welcome.html', {'user': r.user})
+            except TemplateDoesNotExist:
+                return redirect(reverse('lead_creator_dashboard'))
         return redirect(reverse('lead_creator_dashboard'))
     else:
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
 
-    if is_new_user:
-        try:
-            return render(r, 'django_saml2_auth/welcome.html', {'user': r.user})
-        except TemplateDoesNotExist:
-            return HttpResponseRedirect(next_url)
-    else:
-        return HttpResponseRedirect(next_url)
-
-    #r.session.flush()
-
+# View function to redirect to client default SSO login
 def signin(r):
     try:
         import urlparse as _urlparse
@@ -267,6 +269,7 @@ def signin(r):
     
     return HttpResponseRedirect(redirect_url)
 
+# Helper function to render a custom signout template
 def signout(r):
     logout(r)
     return render(r, 'django_saml2_auth/signout.html')
