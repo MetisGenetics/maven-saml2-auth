@@ -1,6 +1,6 @@
-=====================================
-Django SAML2 Authentication Made Easy
-=====================================
+===============================================================
+Django SAML2 Authentication with TCH & Azure Active Directory
+===============================================================
 
 :Author: Dylan Gonzales
 :Version: Use 1.1.4 for Django <=1.9, 2.2.1 for Django >= 1.9, Latest supported django version is 2.1
