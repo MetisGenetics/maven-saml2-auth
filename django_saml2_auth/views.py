@@ -132,6 +132,7 @@ def welcome(r):
 def denied(r):
     return render(r, 'django_saml2_auth/denied.html')
 
+# Helper function to create a new user and associated lead_creator
 def _create_new_user(username, email, firstname, lastname):
     logger.debug('_create_new_user')
     # Create a new user object with the parameters passed
