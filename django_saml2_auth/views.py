@@ -156,7 +156,7 @@ def _create_new_user(username, email, firstname, lastname):
     user.is_active = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('ACTIVE_STATUS', True) # Default to true if not found
     user.is_staff = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('STAFF_STATUS', False) # Default to false if not found
     user.is_superuser = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('SUPERUSER_STATUS', False) # Default to false if not found
-    user.set_unusable_password()
+    #user.set_unusable_password()
 
     # Save changes to the new user instance
     user.save()
@@ -199,7 +199,7 @@ def acs(r):
 
     # For Azure Active Directory Mapping
     user_email = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name')][0]
-    user_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name')][0]
+    user_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('username', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name')][0]
     user_first_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('first_name', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname')][0]
     user_last_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('last_name', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname')][0]
 
@@ -221,11 +221,6 @@ def acs(r):
         # Authenticate the user
         target_user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(r, target_user)
-        if is_new_user:
-            try:
-                return render(r, 'django_saml2_auth/welcome.html', {'user': r.user})
-            except TemplateDoesNotExist:
-                return redirect(reverse('lead_creator_dashboard'))
         return redirect(reverse('lead_creator_dashboard'))
     else:
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
