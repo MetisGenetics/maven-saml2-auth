@@ -222,7 +222,7 @@ def acs(r):
     if target_user.is_active:
         logger.debug('trying to authenticate')
         # Authenticate the user
-        target_user.backend = 'django.contrib.auth.backends.ModelBackend'
+        target_user.backend = 'refer.utils.EmailBackEnd'
         login(r, target_user)
         return redirect(reverse('lead_creator_dashboard'))
     else:
