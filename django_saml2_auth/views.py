@@ -146,7 +146,10 @@ def _create_new_user(username, email, firstname, lastname):
     # Create a new user object with the parameters passed
     # Limit user name to allowable length in DB
     username = str(username)[:150]
-    user = User.objects.create_user(username, email, firstname, lastname)
+    user = User.objects.create(email=email,
+                               username=username, 
+                               first_name=firstname, 
+                               last_name=lastname)
 
     # Obtain the Customer group instance
     group = Group.objects.get(name='Customers')
