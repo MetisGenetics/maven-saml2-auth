@@ -149,7 +149,7 @@ def _create_new_user(username, email, firstname, lastname):
     user = User.objects.create(email=email,
                                username=username, 
                                first_name=firstname, 
-                               last_name=lastname)
+                               last_name=lastname,)
 
     # Obtain the Customer group instance
     group = Group.objects.get(name='Customers')
