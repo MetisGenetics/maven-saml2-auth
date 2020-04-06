@@ -144,19 +144,19 @@ def denied(r):
 def _create_new_user(username, email, firstname, lastname):
     logger.debug('_create_new_user')
     # Create a new user object with the parameters passed
-    user = User.objects.create_user(username, email)
-    user.first_name = firstname
-    user.last_name = lastname
+    # Limit user name to allowable length in DB
+    username = str(username)[:150]
+    user = User.objects.create_user(username, email, firstname, lastname)
 
     # Obtain the Customer group instance
     group = Group.objects.get(name='Customers')
 
     # Set user properties according to SAML2_AUTH configuration
-    group.user_set.add(user)
+    user.groups.add(group)
     user.is_active = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('ACTIVE_STATUS', True) # Default to true if not found
     user.is_staff = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('STAFF_STATUS', False) # Default to false if not found
     user.is_superuser = settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('SUPERUSER_STATUS', False) # Default to false if not found
-    #user.set_unusable_password()
+    user.set_password(settings.TCH_DEFAULT_PASS)
 
     # Save changes to the new user instance
     user.save()
