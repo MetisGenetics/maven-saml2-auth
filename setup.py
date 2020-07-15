@@ -1,6 +1,6 @@
 """The setup module for django_saml2_auth.
 See:
-https://github.com/fangli/django_saml2_auth
+https://github.com/MetisGenetics/django_saml2_auth
 """
 
 from codecs import open
@@ -21,12 +21,12 @@ setup(
     description='Django SAML2 Authentication Made Easy. Easily integrate with SAML2 SSO identity providers like Okta',
     long_description=long_description,
 
-    url='https://github.com/dgonzo27/django-saml2-auth',
+    url='https://github.com/MetisGenetics/django-saml2-auth',
 
-    author='Fang Li',
+    author='Dylan Gonzales',
     author_email='dylan.gonzales@metisgenetics.com',
 
-    license='Apache 2.0',
+    license='MIT',
 
     classifiers=[
         #   3 - Alpha
