@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from saml2 import (
-    BINDING_HTTP_POST,
-    BINDING_HTTP_REDIRECT,
-    entity,
-)
+from saml2 import (BINDING_HTTP_POST, BINDING_HTTP_REDIRECT, entity)
 from saml2.client import Saml2Client
 from saml2.config import Config as Saml2Config
-
 from django import get_version
 from pkg_resources import parse_version
 from django.conf import settings
@@ -45,6 +40,7 @@ if parse_version(get_version()) >= parse_version('1.7'):
 else:
     from django.utils.module_loading import import_by_path as import_string
 
+
 # Helper function to obtain the default next url in the saml schema
 def _default_next_url():
     if 'DEFAULT_NEXT_URL' in settings.SAML2_AUTH:
@@ -52,14 +48,13 @@ def _default_next_url():
     else:
         return '/rfr/dashboard'
 
+
 # Helper function to obtain the current domain (assertion url) in the saml schema
 def get_current_domain(r):
     if 'ASSERTION_URL' in settings.SAML2_AUTH:
         return settings.SAML2_AUTH['ASSERTION_URL']
-    return '{scheme}://{host}'.format(
-        scheme='https' if r.is_secure() else 'http', 
-        host=r.get_host(),
-    )
+    return '{scheme}://{host}'.format(scheme='https' if r.is_secure() else 'http', host=r.get_host())
+
 
 # Helper function to call reverse() on a list of objects
 def get_reverse(objects):
@@ -77,6 +72,7 @@ def get_reverse(objects):
             pass
     raise Exception('URL reverse issue: %s.  Known issue from fangli/django-saml2-auth' % str(objects))
 
+	
 # Helper function to obtain the metadata in the saml schema
 def _get_metadata():
     if 'METADATA_LOCAL_FILE_PATH' in settings.SAML2_AUTH:
@@ -91,6 +87,7 @@ def _get_metadata():
                 },
             ]
         }
+
 
 # Helper function to obtain the saml client given the domain
 def _get_saml_client(domain):
@@ -128,6 +125,7 @@ def _get_saml_client(domain):
     saml_client = Saml2Client(config=spConfig)
     return saml_client
 
+
 # Helper function to render the custom welcome template if it exists
 @login_required
 def welcome(r):
@@ -136,9 +134,11 @@ def welcome(r):
     except TemplateDoesNotExist:
         return HttpResponseRedirect(_default_next_url())
 
+
 # Helper function to render the denied template
 def denied(r):
     return render(r, 'django_saml2_auth/denied.html')
+
 
 # Helper function to create a new user and associated lead_creator
 def _create_new_user(username, email, firstname, lastname):
@@ -146,10 +146,7 @@ def _create_new_user(username, email, firstname, lastname):
     # Create a new user object with the parameters passed
     # Limit user name to allowable length in DB
     username = str(username)[:150]
-    user = User.objects.create(email=email,
-                               username=username, 
-                               first_name=firstname, 
-                               last_name=lastname,)
+    user = User.objects.create(email=email, username=username, first_name=firstname, last_name=lastname)
 
     # Obtain the Customer group instance
     group = Group.objects.get(name='Customers')
@@ -178,8 +175,8 @@ def _create_new_user(username, email, firstname, lastname):
         logger.debug('New lead creator success')
     else:
         logger.debug('New lead creator failure')
-    
     return user
+
 
 # View function to handle logic after SSO user login
 @csrf_exempt
@@ -228,6 +225,7 @@ def acs(r):
     else:
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
 
+
 # View function to redirect to client default SSO login
 def signin(r):
     try:
@@ -266,6 +264,7 @@ def signin(r):
             break
     
     return HttpResponseRedirect(redirect_url)
+
 
 # Helper function to render a custom signout template
 def signout(r):
