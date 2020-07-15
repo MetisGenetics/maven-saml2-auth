@@ -1,6 +1,6 @@
-===================================================
-Django SAML2 Auth with TCH & Azure Active Directory
-===================================================
+=========================================================
+Single Sign On for Genetics Maven using Django SAML2 Auth
+=========================================================
 
 :Author: Dylan Gonzales
 :Version: Use 1.1.4 for Django <=1.9, 2.2.1 for Django >= 1.9, Latest supported django version is 2.1
