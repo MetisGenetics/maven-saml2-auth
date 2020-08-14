@@ -5,14 +5,15 @@ Single Sign On for Genetics Maven using SAML2 Authentication
 :Author: Dylan Gonzales
 :Version: Use 3.0.0 for Django >= 3.0, Latest supported django version is 3.0.8
 
-.. image:: https://img.shields.io/badge/python-2.6|2.7|3.3|3.4|3.5|3.6|3.7-<COLOR>.svg 
+.. image:: https://img.shields.io/badge/django-3.0.8-<COLOR>.svg
+.. image:: https://img.shields.io/badge/python-3.7-<COLOR>.svg 
 .. image:: https://img.shields.io/github/release/MetisGenetics/maven-saml2-auth.svg
     :target: https://github.com/MetisGenetics/maven-saml2-auth/releases/
 .. image:: https://img.shields.io/github/contributors/MetisGenetics/maven-saml2-auth.svg
     :target: https://github.com/MetisGenetics/maven-saml2-auth/graphs/contributors/
 .. image:: https://img.shields.io/github/issues/MetisGenetics/maven-saml2-auth.svg
    :target: https://github.com/MetisGenetics/maven-saml2-auth/issues/
-.. image:: https://img.shields.io/badge/django-3.0.8-<COLOR>.svg
+
 
 This project is a custom configuration of Fang Li's django-saml2-auth.  It aims to 
 leverage some of the best practices and code existing in django-saml2-auth, while allowing
