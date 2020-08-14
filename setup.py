@@ -15,40 +15,25 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='django_saml2_auth',
-    version='2.2.1',
-    description='Django SAML2 Authentication Made Easy. Easily integrate with SAML2 SSO identity providers like Okta',
+    version='3.0.0',
+    description='SAML2 Authentication for Genetics Maven. Easily integrate with SAML2 SSO identity providers like Google Cloud Directory, Azure Active Directory and more',
     long_description=long_description,
-    url='https://github.com/MetisGenetics/django-saml2-auth',
+    url='https://github.com/MetisGenetics/maven-saml2-auth',
     author='Dylan Gonzales',
     author_email='dylan.gonzales@metisgenetics.com',
     license='MIT',
     classifiers=[
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
+        #   3 - Alpha, 4 - Beta, 5 - Production/Stable
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'License :: OSI Approved :: Apache Software License',
-        'Framework :: Django :: 1.5',
-        'Framework :: Django :: 1.6',
-        'Framework :: Django :: 1.7',
-        'Framework :: Django :: 1.8',
-        'Framework :: Django :: 1.9',
-        'Framework :: Django :: 1.10',
-        'Framework :: Django :: 2.x.x',
+        'License :: MIT Approved :: The MIT License (MIT)',
         'Framework :: Django :: 3.0.8',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    keywords='Django SAML2 Authentication Made Easy',
+    keywords='Maven SAML2 Authentication',
     packages=find_packages(),
     install_requires=[
         'pysaml2>=4.5.0',
