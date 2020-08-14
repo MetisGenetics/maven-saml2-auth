@@ -177,7 +177,13 @@ def signin(r):
     logger.debug('tch.signin')
     saml_client = get_saml_client(get_current_domain(r))
     _, info = saml_client.prepare_for_authenticate()
-    redirect_url = str(settings.TCH_SAML2_AUTH['METADATA_AUTO_CONF_URL'])
+    redirect_url = None
+
+    for key, value in info['headers']:
+        if key == 'Location':
+            redirect_url = value
+            break
+    
     return HttpResponseRedirect(redirect_url)
 
 
