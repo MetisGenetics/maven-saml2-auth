@@ -49,7 +49,7 @@ def get_saml_client(domain):
     Helper function to obtain the SAML2 client given the domain
     """
     logger.debug('maven.get_saml_client')
-    acs_url = domain + reverse('maven_acs')
+    acs_url = domain + '/saml2_auth/maven_acs/'
     metadata = get_metadata()
     saml_settings = {
         'metadata': metadata,
