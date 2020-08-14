@@ -1,6 +1,6 @@
-=========================================================
-Single Sign On for Genetics Maven using Django SAML2 Auth
-=========================================================
+============================================================
+Single Sign On for Genetics Maven using SAML2 Authentication
+============================================================
 
 :Author: Dylan Gonzales
 :Version: Use 2.2.1 for Django >= 1.9, Latest supported django version is 3.0.8
