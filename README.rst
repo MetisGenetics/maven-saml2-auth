@@ -29,13 +29,12 @@ This plugin is compatible with Django 3.0.8 - The `pysaml2` Python module is req
 Install
 =======
 This plugin is installed in the requirements.txt file as:
-.. code-block:: bash
 
-    # https://github.com/MetisGenetics/django-saml2-auth/archive/latest.zip
+    https://github.com/MetisGenetics/django-saml2-auth/archive/latest.zip
 
 xmlsec is also required by pysaml2 and is implemented in the Dockerfile:
-.. code-block:: bash
-    # RUN apt-get install -y xmlsec1
+
+    RUN apt-get install -y xmlsec1
 
 
 What does this plugin do?
