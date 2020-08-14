@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django.shortcuts import render
+from logging import getLogger
 logger = getLogger('django-saml2-auth.views')
 
 def denied(r):
