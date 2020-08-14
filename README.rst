@@ -3,7 +3,7 @@ Single Sign On for Genetics Maven using Django SAML2 Auth
 =========================================================
 
 :Author: Dylan Gonzales
-:Version: Use 1.1.4 for Django <=1.9, 2.2.1 for Django >= 1.9, Latest supported django version is 2.1
+:Version: Use 2.2.1 for Django >= 1.9, Latest supported django version is 3.0.8
 
 .. image:: https://img.shields.io/pypi/pyversions/django-saml2-auth.svg
     :target: https://pypi.python.org/pypi/django-saml2-auth
@@ -16,23 +16,20 @@ Single Sign On for Genetics Maven using Django SAML2 Auth
 
 This project is a custom configuration of Fang Li's django-saml2-auth.  It aims to 
 leverage some of the best practices and code existing in django-saml2-auth, while allowing
-it to work properly for a specific application and client (not an admin user and must implement client via Azure Active Directory)
+it to work properly for a specific application and client (not an admin user and must implement client via Azure Active Directory, Google Cloud Directory, and more)
 
 If you wish to see the original supported package please visit https://github.com/fangli/django-saml2-auth
 
-
 Dependencies
 ============
-This plugin is compatible with Django 1.6/1.7/1.8/1.9/1.10. The `pysaml2` Python
-module is required.
-
+This plugin is compatible with Django 3.0.8 - The `pysaml2` Python module is required.
 
 Install
 =======
 This plugin is installed in the requirements.txt file as:
 .. code-block:: bash
 
-    # https://github.com/dgonzo27/django-saml2-auth/archive/tch.zip
+    # https://github.com/MetisGenetics/django-saml2-auth/archive/latest.zip
 
 xmlsec is also required by pysaml2 and is implemented in the Dockerfile:
 .. code-block:: bash
@@ -42,20 +39,27 @@ xmlsec is also required by pysaml2 and is implemented in the Dockerfile:
 What does this plugin do?
 =========================
 This plugin allows the developer to configure a login page for a specific client
-and redirect the user to a SAML2 SSO authentication service.  Once the user is 
-logged in, completes Multi-Factor Authentication, and redirected back to the web application, 
-the plugin will check if the user is already in the system.  If not, the user will be 
-created using Django's default UserModel, and then assigned to a new Lead Creator instance 
-within Maven for the specific organization.  If the user is in the system, the user will be 
-authenticated and redirected to their dashboard in Maven.
+and redirect the user to a SAML2 SSO authentication service.  
+
+For Texas Children's Hospital:
+    Once the user is logged in, completes Multi-Factor Authentication, and is redirected back to the 
+    Maven web app, this plugin will check if the user is already in our system.  If not, the user will be 
+    created using Django's default UserModel, and then assigned to a new Lead Creator instance within Maven 
+    for the TCH organization.  After logging in, the user will be redirected to their dashboard in Maven.
+
+For Metis Genetics (Maven):
+    Once the user is logged in and is redirected back to the Maven web app, this plugin will check if the user 
+    is already in our system.  If not, no user will be created and they will be redirected to our default error page.
+    After logging in, the user will be redirected to their dashboard in Maven.
+
 
 How to use?
 ===========
-#. Import the views module in your root urls.py
+#. Import the desired module in your root urls.py
 
     .. code-block:: python
 
-        import django_saml2_auth.views
+        import django_saml2_auth.maven, django_saml2_auth.tch
 
 #. Override the default login page in the root urls.py file, by adding these
    lines **BEFORE** any `urlpatterns`:
@@ -69,12 +73,13 @@ How to use?
         # The following line will create an organization specific login with SAML2 (optional)
         # If you want to specify the after-login-redirect-URL, use parameter "?next=/the/path/you/want"
         # with this view.  Otherwise, implement in the settings seen later or default to the lead creator dashboard.
-        url(r'^tch/login/$', django_saml2_auth.views.signin),
+        url(r'^tch/login/$', django_saml2_auth.tch.signin),
+        url(r'^maven/login/$', django_saml2_auth.maven.signin),
 
         # The following line will replace the admin login with SAML2 (optional)
         # If you want to specify the after-login-redirect-URL, use parameter "?next=/the/path/you/want"
         # with this view.  Otherwise, implement in the settings seen later or default to the lead creator dashboard.
-        url(r'^admin/login/$', django_saml2_auth.views.signin),
+        url(r'^admin/login/$', django_saml2_auth.maven.signin),
 
 #. Add 'django_saml2_auth' to INSTALLED_APPS
 
@@ -94,13 +99,12 @@ How to use?
 
     .. code-block:: python
 
-        SAML2_AUTH = {
+        TCH_SAML2_AUTH = {
             # Metadata is required, choose either remote url or local file path
             'METADATA_AUTO_CONF_URL': '[The auto(dynamic) metadata configuration URL of SAML2]',
             'METADATA_LOCAL_FILE_PATH': '[The metadata configuration file path]',
 
             # Optional settings below
-            'DEFAULT_NEXT_URL': '/rfr/dashboard',  # Custom target redirect URL after the user get logged in. Must exist in metis/build_assets/js/reverse.js. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
             'CREATE_USER': 'TRUE', # Create a new Django user when a new user logs in. Defaults to True.
             'NEW_USER_PROFILE': {
                 'ACTIVE_STATUS': True,  # The default active status for new users
@@ -121,7 +125,8 @@ How to use?
         }
 
 #. In your SAML2 SSO identity provider, set the Single-sign-on URL and Audience
-   URI(SP Entity ID) to http://your-domain/saml2_auth/acs/
+   URI(SP Entity ID) to http://your-domain/saml2_auth/tch_acs/
+   URI(SP Entity ID) to http://your-domain/saml2_auth/maven_acs/
 
 
 Explanation
