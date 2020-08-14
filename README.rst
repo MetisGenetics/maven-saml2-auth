@@ -5,23 +5,16 @@ Single Sign On for Genetics Maven using SAML2 Authentication
 :Author: Dylan Gonzales
 :Version: Use 3.0.0 for Django >= 3.0, Latest supported django version is 3.0.8
 
-.. image:: https://img.shields.io/badge/python-2.6|2.7|3.3|3.4|3.5|3.6|3.7-<COLOR>.svg
-    :target:
-
-.. image:: https://img.shields.io/badge/django-3.0.8-<COLOR>.svg
-    :target:
-
-.. image:: https://img.shields.io/github/license/MetisGenetics/maven-saml2-auth.svg
-    :target: https://github.com/MetisGenetics/maven-saml2-auth/blob/latest/LICENSE
-
 .. image:: https://img.shields.io/github/release/MetisGenetics/maven-saml2-auth.svg
-    :target: https://GitHub.com/MetisGenetics/maven-saml2-auth/releases/
-
+    :target: https://github.com/MetisGenetics/maven-saml2-auth/releases/
 .. image:: https://img.shields.io/github/contributors/MetisGenetics/maven-saml2-auth.svg
-    :target: https://GitHub.com/MetisGenetics/maven-saml2-auth/graphs/contributors/
-
+    :target: https://github.com/MetisGenetics/maven-saml2-auth/graphs/contributors/
 .. image:: https://img.shields.io/github/issues/MetisGenetics/maven-saml2-auth.svg
-   :target: https://GitHub.com/MetisGenetics/maven-saml2-auth/issues/
+    :target: https://github.com/MetisGenetics/maven-saml2-auth/issues/
+.. image:: https://img.shields.io/badge/django-3.0.8-<COLOR>.svg
+    :target: https://github.com/django/django/releases/tag/3.0.8
+.. image:: https://img.shields.io/badge/python-3.7-<COLOR>.svg
+    :target: https://www.python.org/downloads/release/python-370/
 
 This project is a custom configuration of Fang Li's django-saml2-auth.  It aims to 
 leverage some of the best practices and code existing in django-saml2-auth, while allowing
@@ -36,13 +29,12 @@ This plugin is compatible with Django 3.0.8 - The `pysaml2` Python module is req
 Install
 =======
 This plugin is installed in the requirements.txt file as:
-.. code-block:: bash
 
-    # https://github.com/MetisGenetics/django-saml2-auth/archive/latest.zip
+    https://github.com/MetisGenetics/django-saml2-auth/archive/latest.zip
 
 xmlsec is also required by pysaml2 and is implemented in the Dockerfile:
-.. code-block:: bash
-    # RUN apt-get install -y xmlsec1
+
+    RUN apt-get install -y xmlsec1
 
 
 What does this plugin do?
