@@ -3,6 +3,8 @@
 from saml2 import (BINDING_HTTP_POST, BINDING_HTTP_REDIRECT, entity)
 from saml2.client import Saml2Client
 from saml2.config import Config as Saml2Config
+from django import get_version
+from pkg_resources import parse_version
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import login, logout, get_user_model
@@ -10,12 +12,38 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.http import is_safe_url
 from logging import getLogger
 from book.models import Organization
 from integration.serializers import ReferralCreatorSerializer
 
 logger = getLogger('django-saml2-auth.tch')
 User = get_user_model() # Default User
+
+# Get imports based on installed versions
+try:
+    import urllib2 as _urllib
+except:
+    import urllib.request as _urllib
+    import urllib.error
+    import urllib.parse
+
+if parse_version(get_version()) >= parse_version('1.7'):
+    from django.utils.module_loading import import_string
+else:
+    from django.utils.module_loading import import_by_path as import_string
+
+
+def default_next_url():
+    """
+    Helper function to obtain the default next url in the SAML2 Schema
+    """
+    logger.debug('tch.default_next_url')
+    if 'DEFAULT_NEXT_URL' in settings.TCH_SAML2_AUTH:
+        return settings.TCH_SAML2_AUTH['DEFAULT_NEXT_URL']
+    else:
+        return '/rfr/dashboard'
+
 
 def get_current_domain(r):
     """
@@ -51,7 +79,7 @@ def get_saml_client(domain):
     Helper function to obtain the SAML2 client given the domain
     """
     logger.debug('tch.get_saml_client')
-    acs_url = domain + '/saml2_auth/tch_acs/'
+    acs_url = domain + reverse('tch_acs')
     metadata = get_metadata()
 
     saml_settings = {
@@ -175,6 +203,32 @@ def signin(r):
     View function to redirect to client default SSO login
     """
     logger.debug('tch.signin')
+    try:
+        import urlparse as _urlparse
+        from urllib import unquote
+    except:
+        import urllib.parse as _urlparse
+        from urllib.parse import unquote
+    
+    next_url = r.GET.get('next', default_next_url())
+
+    try:
+        if 'next=' in unquote(next_url):
+            next_url = _urlparse.parse_qs(_urlparse.urlparse(unquote(next_url)).query)['next'][0]
+    except:
+        next_url = r.GET.get('next', default_next_url())
+
+    # Only permit signin requests where the next url is a safe url
+    if parse_version(get_version()) >= parse_version('2.0'):
+        url_ok = is_safe_url(next_url, None)
+    else:
+        url_ok = is_safe_url(next_url)
+    
+    if not url_ok:
+        return HttpResponseRedirect(reverse('denied'))
+    
+    r.session['login_next_url'] = next_url
+
     saml_client = get_saml_client(get_current_domain(r))
     _, info = saml_client.prepare_for_authenticate()
     redirect_url = None
