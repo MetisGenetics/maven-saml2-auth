@@ -39,7 +39,7 @@ def default_next_url():
     if 'DEFAULT_NEXT_URL' in settings.MAVEN_SAML2_AUTH:
         return settings.MAVEN_SAML2_AUTH['DEFAULT_NEXT_URL']
     else:
-        return '/bok/'
+        return reverse('start_page')
 
 
 def get_reverse(objects):
@@ -77,7 +77,7 @@ def get_metadata():
     """
     Helper function to obtain the metadata in the SAML2 Schema
     """
-    logger.debug('maven.get_current_domain')
+    logger.debug('maven.get_metadata')
     if 'METADATA_LOCAL_FILE_PATH' in settings.MAVEN_SAML2_AUTH:
         return {
             'local': [settings.MAVEN_SAML2_AUTH['METADATA_LOCAL_FILE_PATH']]
@@ -137,7 +137,7 @@ def acs(r):
     logger.debug('maven.acs')
     saml_client = get_saml_client(get_current_domain(r))
     response = r.POST.get('SAMLResponse', None)
-    next_url = r.session.get('login_next_url', settings.MAVEN_SAML2_AUTH.get('DEFAULT_NEXT_URL', '/bok/'))
+    next_url = r.session.get('login_next_url', settings.MAVEN_SAML2_AUTH.get('DEFAULT_NEXT_URL', '/bok/$'))
     
     if not response:
         return HttpResponseRedirect(reverse('denied'))
@@ -151,12 +151,14 @@ def acs(r):
         return HttpResponseRedirect(reverse('denied'))
 
     # For Google Cloud Directory Mapping
-    user_email = user_identity[settings.MAVEN_SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'email')][0]    
+    user_email = user_identity[settings.MAVEN_SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'email')][0]
+    logger.info('Email is {}'.format(user_email))  
     target_user = None
 
     # Try to query the user by username (user_email)
     try:
         target_user = User.objects.get(username=user_email)
+        logger.info('Target user found! {}'.format(target_user))
     # If the user DNE, return the denied page
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('denied'))
@@ -211,7 +213,7 @@ def signin(r):
             redirect_url = value
             break
 
-    return HttpResponseRedirect('https://test.metisgenetics.com/bok/')
+    return HttpResponseRedirect(redirect_url)
 
 
 def signout(r):
