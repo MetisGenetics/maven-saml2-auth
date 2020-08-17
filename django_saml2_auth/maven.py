@@ -127,7 +127,7 @@ def get_saml_client(domain):
     spConfig.allow_unknown_attributes = True
     saml_client = Saml2Client(config=spConfig)
     return saml_client
-    
+
 
 @csrf_exempt
 def acs(r):
@@ -211,7 +211,7 @@ def signin(r):
             redirect_url = value
             break
 
-    return HttpResponseRedirect(redirect_url)
+    return HttpResponseRedirect('https://test.metisgenetics.com/bok/')
 
 
 def signout(r):
