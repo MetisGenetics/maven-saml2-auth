@@ -45,6 +45,26 @@ def default_next_url():
         return '/rfr/dashboard'
 
 
+def get_reverse(objects):
+    """
+    Helper function to call reverse() on a list of objects
+    """
+    logger.debug('maven.get_reverse')
+    if parse_version(get_version()) >= parse_version('2.0'):
+        from django.urls import reverse
+    else:
+        from django.core.urlresolvers import reverse
+    if objects.__class__.__name__ not in ['list', 'tuple']:
+        objects = [objects]
+
+    for obj in objects:
+        try:
+            return reverse(obj)
+        except:
+            pass
+    raise Exception('URL reverse issue %s. Known issue from fangli/django-saml2-auth' % str(objects))
+
+
 def get_current_domain(r):
     """
     Helper function to obtain the current domain (assertion url) in the SAML2 Schema
@@ -79,7 +99,7 @@ def get_saml_client(domain):
     Helper function to obtain the SAML2 client given the domain
     """
     logger.debug('tch.get_saml_client')
-    acs_url = domain + reverse('tch_acs')
+    acs_url = domain + get_reverse([acs, 'tch_acs', 'django_saml2_auth:tch_acs'])
     metadata = get_metadata()
 
     saml_settings = {
@@ -158,6 +178,7 @@ def acs(r):
     logger.debug('tch.acs')
     saml_client = get_saml_client(get_current_domain(r))
     response = r.POST.get('SAMLResponse', None)
+    next_url = r.session.get('login_next_url', settings.TCH_SAML2_AUTH.get('DEFAULT_NEXT_URL', '/rfr/dashboard'))
 
     if not response:
         return HttpResponseRedirect(reverse('denied'))
