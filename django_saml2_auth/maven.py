@@ -152,13 +152,11 @@ def acs(r):
 
     # For Google Cloud Directory Mapping
     user_email = user_identity[settings.MAVEN_SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('email', 'email')][0]
-    logger.info('Email is {}'.format(user_email))  
     target_user = None
 
     # Try to query the user by username (user_email)
     try:
         target_user = User.objects.get(username=user_email)
-        logger.info('Target user found! {}'.format(target_user))
     # If the user DNE, return the denied page
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('denied'))
