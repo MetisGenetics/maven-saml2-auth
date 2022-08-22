@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from logging import getLogger
 
 logger = getLogger('django-saml2-auth.maven')
@@ -193,9 +193,9 @@ def signin(r):
 
     # Only permit signin requests where the next url is a safe url
     if parse_version(get_version()) >= parse_version('2.0'):
-        url_ok = is_safe_url(next_url, None)
+        url_ok = url_has_allowed_host_and_scheme(next_url, None)
     else:
-        url_ok = is_safe_url(next_url)
+        url_ok = url_has_allowed_host_and_scheme(next_url)
 
     if not url_ok:
         return HttpResponseRedirect(reverse('denied'))
